@@ -1,0 +1,42 @@
+.toggle-next {
+    border-radius: 0;
+border-color: red;
+  }
+  
+  label {
+    cursor: pointer;
+  }
+  
+  .ellipsis {
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    /* color: black; */
+  }
+  
+  .apply-selection {
+    display: none;
+    width: 100%;
+    margin: 0;
+    padding: 5px 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .apply-selection .ajax-link {
+    display: none;
+  }
+  
+  .checkboxes {
+    margin: 0;
+    display: none;
+    border: 1px solid #ccc;
+    border-top: 0;
+  }
+  
+  .checkboxes .inner-wrap {
+    padding: 5px 10px;
+    max-height: 140px;
+    overflow: auto;
+  }
+  

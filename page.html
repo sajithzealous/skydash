@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <?php
+
+
+   date_default_timezone_set('America/New_York');
+
+
+    include('db-con.php');
+  include  'include_file/link.php';
+
+  
+  ?>  
+
+<!-- Include moment.js from CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<!--custom css and js-->
+<link rel="stylesheet" type="text/css" href="team_dash/css/team_dash.css" />
+<script src="team_dash/js/team_dash.js"></script>
+
+</head>
+<body>
+
+  <div class="container-scroller">
+    <?php
+    include 'include_file/profile.php';
+    ?>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_settings-panel.html -->
+     <?php
+      include 'include_file/sidebar.php'; // Use a relative path to include the file
+      ?>
+ 
+ <?php
+include 'style.php';
+ ?>
+ 
+ 
+      <div class="main-panel">
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                    <div class="carousel-inner">
+                      <div class="carousel-item active">
+
+                        </div>
+                      </div>
+               
+                    </div>
+     
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+ 
+            
+ sds
+
+          </div>
+ 
+          <br>
+
+     
+
+          
+          
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- this two div is main div any code put above div  -->
+          </div>
+               
+        </div>
+<!-- END  this two div is main div any code put above div  -->
+
+
+
+      
+       
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>   
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+<!-- ------------------------------------------------------------- Model Design----------------------------------------------- -->
+ 
+  <!-- Edit modal -->
+  
+
+  <div id="form-data"></div>
+
+
+ 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+ 
+
+<script>
+ 
+ $.ajax({
+    url: "page.php", // Replace with the actual URL to handle the file upload
+    type: "GET",
+    success: function (response) {
+        console.log(response);
+         
+          for (let i = 0; i < response.length; i++) {
+            var formHtml = `<form method="post" action="process_form.php" id="form-${response[i].Mitem}">`;
+            const field = JSON.parse(response[i].json)
+           
+             for (let j = 0; j < field.length; j++) {
+               switch (field[j].type) {
+                case 'input':
+                    formHtml += '<input type="text" name="' + field[j].name + '" placeholder="' + field[j].placeholder + '" ';
+                    if (field[j].required) {
+                        formHtml += 'required';
+                    }
+                    formHtml += '> <br>';
+                    break;
+                 case 'select':
+                      formHtml += '<select name="' + field[j].name + '">';
+                      $.each(field[j].options, function(i, option) {
+                          formHtml += '<option value="' + option + '">' + option + '</option>';
+                      });
+                      formHtml += '</select>';
+                      break;
+                  case 'textarea':
+                      formHtml += '<textarea name="' + field[j].name + '" placeholder="' + field[j].placeholder + '" ';
+                      if (field[j].required) {
+                          formHtml += 'required';
+                      }
+                      formHtml += '></textarea>';
+                      break;
+            }
+             }
+           
+
+
+              formHtml += `<button  onclick="form_submit('${response[i].Mitem}')">submit</button>`;
+            formHtml += '</form>';
+             $('#form-data').append(formHtml);
+          }
+          
+
+            
+
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", errorThrown);
+    },
+});
+
+ function form_submit (id) {
+  console.log(id)
+ }
+
+</script>
+ 
+  <script src="vendors/chart.js/Chart.min.js"></script>
+  <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+  <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+  <script src="js/dataTables.select.min.js"></script>
+ 
+  <script src="js/off-canvas.js"></script>
+  <script src="js/hoverable-collapse.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/todolist.js"></script>
+  <!-- endinject -->
+
+</body>
+
+</html>
+

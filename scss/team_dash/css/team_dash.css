@@ -1,0 +1,29 @@
+.card.card-tale {
+    background: #0047fda8 !important;
+    color: #ffffff;
+}
+.fileassign{
+    background-color:#0f9db3;
+}
+.wip{
+    background-color: #204cbdd1;
+}
+.card.card-dark-blue {
+    background: #5d5dde;
+    color: #ffffff;
+}
+
+.allowed{
+    background-color: #fa9edd   ;
+}
+
+.card.card-light-danger {
+    background: #f88a5e;
+    color: #ffffff;
+}
+.qccomplete{
+    background-color: #b57cff;
+}
+.approval{
+    background-color: #75c8f1;
+}

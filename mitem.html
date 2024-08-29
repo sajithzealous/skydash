@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form</title>
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     
+</head>
+<body>
+  <form id="inputContainer">
+<!-- <button type="submit">asdasd</button> -->
+</form>
+
+<script>
+    $(document).ready(function () {
+        var jsonFields = {}
+
+        // Function to generate HTML form based on JSON data
+        function generateForm(jsonData) {
+            let formHTML = '<form id="dynamicForm">';
+
+            jsonData.forEach(item => {
+               
+                formHTML += `<fieldset><legend>${item.fields[0].group}</legend>`;
+                item.fields.forEach(field => {
+                    
+                    field.tags.forEach(tag => {
+                        formHTML += `<div><label>${tag.label}</label>`;
+                        switch (tag.type) {
+                            case 'text':
+                            case 'textarea':
+                                formHTML += `<input type="${tag.type}" name="${tag.name}" placeholder="${tag.placeholder || ''}" maxlength="${tag.maxlength || ''}" value="${tag.value || ''}" class="${tag.class || ''}"></div>`;
+                                break;
+                            case 'checkbox':
+                                formHTML += `<input type="checkbox" name="${tag.name}" ${tag.checked ? 'checked' : ''} class="${tag.class || ''}">${tag.label}</div>`;
+                                break;
+                            case 'select':
+                                formHTML += `<select name="${tag.name}" class="${tag.class || ''}">`;
+                                tag.options.forEach(option => {
+                                    formHTML += `<option value="${option}" ${tag.value === option ? 'selected' : ''}>${option}</option>`;
+                                });
+                                formHTML += `</select></div>`;
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                });
+                formHTML += '</fieldset>';
+            });
+
+            formHTML += '<button type="submit">Submit</button></form>';
+            formHTML += '<button type="submit">Submit</button></form>';
+            return formHTML;
+        }
+
+        // Function to render input fields
+        function renderInputFields(jsonFields) {
+            const container = document.getElementById('inputContainer');
+            const rapdiv = document.createElement('div');
+
+            jsonFields.forEach(item => {
+                const groupLabel = document.createElement('label');
+                 const rapdiv = document.createElement('div');
+                groupLabel.textContent = item.fields[0].group;
+                container.appendChild(groupLabel);
+
+                item.fields.forEach(field => {
+                    field.tags.forEach(tag => {
+                        const fieldDiv = document.createElement('div');
+
+                        const inputLabel = document.createElement('label');
+                        inputLabel.textContent = tag.label;
+                        fieldDiv.appendChild(inputLabel);
+
+                        let inputField;
+
+                        switch (tag.type) {
+                            case 'text':
+                                inputField = document.createElement('input');
+                                inputField.setAttribute('type', 'text');
+                                inputField.setAttribute('value', tag.value || '');
+                                break;
+                            case 'checkbox':
+                                inputField = document.createElement('input');
+                                inputField.setAttribute('type', 'checkbox');
+                                inputField.checked = tag.checked || false;
+                                break;
+                            case 'select':
+                                inputField = document.createElement('select');
+                                tag.options.forEach(option => {
+                                    const optionElement = document.createElement('option');
+                                    optionElement.textContent = option;
+                                    if (tag.value && tag.value === option) {
+                                        optionElement.selected = true;
+                                    }
+                                    inputField.appendChild(optionElement);
+                                });
+                                break;
+                            case 'textarea':
+                                inputField = document.createElement('textarea');
+                                inputField.textContent = tag.value || '';
+                                break;
+                            default:
+                                inputField = document.createElement('input');
+                                inputField.setAttribute('type', 'text');
+                        }
+
+                        inputField.setAttribute('name', tag.name);
+                        inputField.setAttribute('placeholder', tag.placeholder);
+                        if (tag.maxlength) {
+                            inputField.setAttribute('maxlength', tag.maxlength);
+                        }
+
+                        if (tag.class) {
+                            inputField.classList.add(tag.class);
+                        }
+
+                        fieldDiv.appendChild(inputField);
+                        container.appendChild(fieldDiv);
+                        rapdiv.appendChild(container);
+                    });
+                });
+            });
+        }
+
+        // Function to gather form values
+        function gatherFormValues() {
+            const formData = [];
+
+            jsonFields.forEach(fieldGroup => {
+                const groupData = {
+                    mitem: fieldGroup.mitem,
+                    mitem_type: fieldGroup.mitem_type,
+                    fields: []
+                };
+
+                fieldGroup.fields.forEach(field => {
+                    const fieldData = {
+                        group: field.group,
+                        tags: []
+                    };
+
+                    field.tags.forEach(tag => {
+                        const inputField = document.querySelector(`[name="${tag.name}"]`);
+                        if (inputField) {
+                            const value = inputField.type === 'checkbox' ? inputField.checked : inputField.value;
+                            tag.value = value;
+                            fieldData.tags.push(tag);
+                        }
+                    });
+
+                    groupData.fields.push(fieldData);
+                });
+
+                formData.push(groupData);
+            });
+
+            return formData;
+        }
+
+        // Function to handle form submission
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = gatherFormValues();
+            console.log(formData);
+ 
+            $.ajax({
+                url: "ggmitem/ggmitem_insert.php?action=insert",  
+                type: "POST",
+                data: {
+                    formData:formData
+                },
+                success: function (response) {
+                    console.log(response);
+                    // You can handle success response here
+                },
+                error: function (error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+        }
+
+        // Attach submit event listener to the form
+        const form = document.getElementById('inputContainer');
+        form.addEventListener('submit', handleSubmit);
+
+        // AJAX call to retrieve JSON data from server
+        $.ajax({
+            url: "Assign/ggmitem.php?action=filter",  
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                const jsonData = response.agencyresponse;
+                renderInputFields(jsonData.map((item) => JSON.parse(item)));
+                jsonFields = jsonData.map((item) => JSON.parse(item));
+
+                const coderjsonData = response.coderresponse;
+                renderInputFields(coderjsonData.map((item) => JSON.parse(item)));
+                jsonFields = coderjsonData.map((item) => JSON.parse(item));
+            },
+            error: function (error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

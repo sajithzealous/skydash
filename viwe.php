@@ -1,0 +1,426 @@
+<?php 
+
+session_start();
+ 
+  include('db/db-con.php');
+  include  'include_file/link.php';
+      $role = $_SESSION['role'];
+      $user = $_SESSION['username'];
+      $emp_id = $_SESSION['empid'];
+      $agency_name = $_SESSION['agency'] 
+
+ 
+
+ 
+   
+  ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> </title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- <link rel="stylesheet" href="code_des/css/code_desc.css"> -->
+    <link rel="stylesheet" href="./css/filter/filter.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link href='https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css' rel='stylesheet' type='text/css'>
+
+ 
+<style>
+    /* Custom style for Excel button */
+.custom-excel-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+/* Custom style for CSV button */
+.custom-csv-button {
+    background-color: #008CBA; /* Blue */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+ 
+
+/* Fix table header */
+  #head {
+        position: sticky;
+        top: 0;
+        background-color: white; /* Optional: Change background color as needed */
+        z-index: 1500; /* Optional: Ensure the header appears above other elements */
+    }
+     #head1 {
+        position: sticky;
+        top: 0;
+        background-color: white; /* Optional: Change background color as needed */
+        z-index: 1500; /* Optional: Ensure the header appears above other elements */
+    }
+     #head2 {
+        position: sticky;
+        top: 0;
+        background-color: white; /* Optional: Change background color as needed */
+        z-index: 1500; /* Optional: Ensure the header appears above other elements */
+    }
+
+ .scroll {
+    overflow-y: auto; /* This allows vertical scrolling if the content overflows the container vertically */
+    overflow-x: auto; /* This is invalid CSS syntax; `overflow-x` property expects a value like `auto`, `hidden`, `scroll`, or `visible`, not a specific length like `500px` */
+    max-height: 690px; /* This sets the maximum height of the container, beyond which it will start to scroll vertically */
+}
+
+ 
+
+ 
+
+</style>
+
+</head>
+
+
+
+<?php
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sth = $conn->prepare("SELECT Team,team_emp_id FROM coders GROUP BY Team,team_emp_id;
+ ");
+    $sth->execute();
+    $team = $sth->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sth = $conn->prepare("SELECT file_status FROM `filestatus` WHERE `status`='active'");
+    $sth->execute();
+    $status = $sth->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $sth = $conn->prepare("SELECT agency FROM `Main_Data` GROUP BY `agency`");
+    $sth->execute();
+    $agency = $sth->fetchAll(PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+
+
+// Set the default time zone to EST (Eastern Standard Time)
+date_default_timezone_set('America/New_York');
+
+// Get the current timestamp
+$currentTimestamp = time();
+
+// Convert the timestamp to the desired date format
+$estDate = date('Y-m-d', $currentTimestamp);
+ 
+
+
+ ?>
+
+<body>
+    <div class="container-scroller">
+        <!-- Navbar -->
+        <?php include 'include_file/profile.php'; ?>
+
+        <div class="container-fluid page-body-wrapper">
+            <!-- Sidebar -->
+            <?php include 'include_file/sidebar.php'; ?>
+
+            <div class="main-panel">
+                <div class="content-wrapper">
+                 
+ 
+              
+       <div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <p class="card-title mb-0 text-primary text-uppercase">Worklog-Report</p><br><br>
+            <button type="button" class="btn btn-primary btn-sm float-right y-3 work_log" id="work_log" style="margin-top: -67px;">Search</button>
+            <h4 class="card-title">Filters</h4>
+            <form class="form-sample">
+                <div class="row">
+                <div class="col-md-3">
+    <div class="form-group row">
+        <label class="col-sm-4 col-form-label">From Date</label>
+        <div class="col-sm-8">
+            <input type="date" class="form-control" id="from"  title="<?php echo $estDate; ?>" value="<?php echo $estDate; ?>" style="font-size: 12px;"required>
+        </div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">To Date</label>
+        <div class="col-sm-9">
+            <input type="date" class="form-control" id="to" title="<?php echo $estDate; ?>" value="<?php echo $estDate; ?>" style="font-size: 12px;"required>
+        </div>
+    </div>
+</div>
+
+                    <div class="col-md-3">
+                        <div class="form-group row">
+                            <!-- <label class="col-sm-4 col-form-label bold" style="margin-right: -40px;">Team</label> -->
+                          
+                            <div class="col-sm-10">
+                               <input type="text" class="form-control" name="mrn" value="" id="mrn_id" placeholder="Mrn Search">
+                            </div>
+                        </div>
+                    </div>
+                      <div class="col-md-3">
+                        <div class="form-group row">
+                            <!-- <label class="col-sm-4 col-form-label">Coder</label> -->
+                            <div class="col-sm-10">
+                                   <input type="text" class="form-control" name="Patient_name" value="" id="patient_id" placeholder="Patient-Name Search">
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="col-md-2">
+    <div class="form-group row">
+        <div class="col-sm-10">
+      <!--   <select class="form-control" name="Agency" id="agency_get" style="color:black;">
+            <option value="">All-Agency</option>
+            <?php foreach ($agency as $row) { ?>
+                <option value="<?= $row['agency'] ?>"><?= $row['agency'] ?></option>
+            <?php } ?>
+        </select>  -->
+    </div>
+</div>
+</div>
+ 
+                  
+                     <div class="col-md-2">
+                        <div class="form-group row">
+                            <!-- <label class="col-sm-4 col-form-label">Status</label> -->
+                            <div class="col-sm-10">
+<!-- <select class="form-control" name="team" id="status_get" style="color:black;font-weight: 6000;">
+    <option value="">Status</option>
+    <?php foreach ($status as $status) { ?>
+        <option value="<?= $status['file_status']  ?>"><?= $status['file_status'] ?></option>
+    <?php } ?>
+</select>   -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+ 
+
+ 
+<style>
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-toggle {
+    background-color: #f1f1f1;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+  }
+
+  .dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dropdown-menu li {
+    margin: 5px 0;
+  }
+
+  .dropdown-menu input {
+    margin-right: 10px;
+  }
+
+  .dropdown.open .dropdown-menu {
+    display: block;
+  }
+</style>
+ 
+
+<div class="dropdown">
+  <div class="dropdown-toggle"><b>Select Columns</div></b>
+  <div class="dropdown-menu">
+    <ul class="items">
+      <li><input type="checkbox" class="column-toggle" data-column="1" checked> Entry ID </li>
+      <li><input type="checkbox" class="column-toggle" data-column="2" checked> MRN</li>
+      <li><input type="checkbox" class="column-toggle" data-column="3" checked> Patient_name </li>
+      <li><input type="checkbox" class="column-toggle" data-column="4" checked> Status</li>
+      <li><input type="checkbox" class="column-toggle" data-column="7" checked> Agency</li>
+      <li><input type="checkbox" class="column-toggle" data-column="8" checked> TeamLeader</li>
+      <li><input type="checkbox" class="column-toggle" data-column="9" checked> TeamLeader-Id</li>
+      <li><input type="checkbox" class="column-toggle" data-column="10" checked> Coder</li>
+      <li><input type="checkbox" class="column-toggle" data-column="11" checked> Coder-Id</li>
+    </ul>
+  </div>
+</div>
+<br>
+
+<script>
+  document.querySelector('.dropdown-toggle').addEventListener('click', function() {
+    this.parentElement.classList.toggle('open');
+  });
+
+  window.addEventListener('click', function(event) {
+    if (!event.target.matches('.dropdown-toggle')) {
+      var dropdowns = document.querySelectorAll('.dropdown');
+      dropdowns.forEach(function(dropdown) {
+        //dropdown.classList.remove('open');
+      });
+    }
+  });
+</script>
+
+ 
+
+
+  <img id="download_excel_work" src="images/dd.png" title="Download" class="NEW float-right hover:bg-primary-600" style="width: 45px; margin-top: -8px; margin-left: 420px; ">
+
+         <div class="col-lg-12 grid-margin stretch-card">
+         <div class="card">
+ 
+        <div class="card-body">
+
+ 
+   
+ 
+
+           
+
+           <div class="table-responsive scroll"  >
+    <table class="table table-striped table-bordered" id="table_report">
+        <thead style="background: #4b49ac; color: white;"id="head4">
+            <tr>
+                <th>Sno</th>
+                <th>File_id</th>
+                <th>Mrn</th>
+                <th>Patient_name</th>
+                <th>Status</th>
+                <th>Assesment-Data</th>
+             
+                <th>Assesment-Type</th>
+                   <th>Agency</th>
+                <th>TeamLeader</th>
+                <th>TeamLeader-Empid</th>
+                <th>Coder</th>
+                <th>Coder-Empid</th>
+                <th>File_Log</th>
+                
+            </tr>
+        </thead>
+        <tbody id="work_log_data">
+            
+        </tbody>
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+ 
+
+        </div>
+    </div>
+</div>
+
+ 
+        </div>
+ 
+
+
+
+ 
+<?php  $randomNumber = rand(1000, 9999);  ?>
+ 
+ 
+    <script src="report_files/js/team_wise_report.js?<?php echo $randomNumber ?>"></script>
+     <script src="report_files/js/worlog_report_download.js?<?php echo $randomNumber ?>"></script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
+    <!-- Modal Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+ 
+
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+
+</body>
+
+<style>
+
+
+
+
+.headerrow{
+    text-align: center !important;
+    background-color:#4b49ac !important;color:white;
+/*    font-size: 200px;*/
+
+}
+
+
+    </style>
+
+</html>

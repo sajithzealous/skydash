@@ -1,0 +1,86 @@
+.card.card-tale {
+    background:#556ba4 !important;
+    color: #ffffff;
+}
+.fileassign{
+    background-color:#0f9db3!important;
+}
+.wip{
+    background-color: #204cbdd1!important;
+}
+.card.card-dark-blue {
+    background: #595985!important;
+    color: #ffffff;
+}
+
+.allowed{
+    background-color: #897382 !important;
+}
+
+.wipqcfile {
+    background: #8e5696!important;
+    color: #ffffff;
+}
+.qccomplete{
+    background-color: #ba9be2!important;
+}
+.approval{
+    background-color: #607d8b!important;
+}
+.assign_count{
+    background-color:#e68a8a; text-align:left;padding:10px;border-radius:10px;color:white;
+}
+.badge-assignteam{
+    color:white;
+    background:#556ba4 !important
+}
+.badge-assigncoder{
+    color:white;
+    background-color:#0f9db3!important;
+}
+.badge-wip{
+    color:white;
+    background-color: #204cbdd1!important;
+}
+.badge-completed{
+    background: #595985!important;
+    color: #ffffff;
+}
+.badge-allowed{
+    background-color: #897382  !important;
+    color: #ffffff;
+}
+.badge-wipQc{
+    background: #8e5696!important;
+    color: #ffffff;
+}
+.badge-qccompleted{
+    background-color: #b57cff!important;
+    color: #ffffff;
+}
+.badge-approved{
+    background-color: #607d8b!important;
+    color: #ffffff;
+}
+.canvasjs-chart-credit{
+    visibility: hidden !important;
+}
+
+.teams {
+    font-size: medium !important;
+    border-radius: 19px;
+    padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+    background-color: #fff;
+    color: #212529;
+    border: 2px solid #3240a3;
+    float: left;
+    font-weight: bold;
+    padding: 0.5rem 5rem 0.5rem 0.9rem
+}
+.table.table-borderless, .jsgrid .table-borderless.jsgrid-table {
+    border: none;
+    text-align: center !important;
+}
+.table.table-borderless th{
+    text-align: center !important;
+}
